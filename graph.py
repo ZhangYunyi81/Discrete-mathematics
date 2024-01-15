@@ -22,16 +22,14 @@ class MyGraph(nx.Graph):
         self.path = []
         self.shortest_length = 0
 
-    def generate_random_map(self, node_amount=20):
-        print('开始生成随机图')
-        weight_matrix = np.random.randint(0,5,(node_amount, node_amount))
+    def generate_map_from_matrix(self, weight_matrix):
+        node_amount = weight_matrix.shape[0]
         for node_1 in range(node_amount):
             self.add_node(node_1, pos=(np.random.random(1), np.random.random(1)))
             for node_2 in range(node_amount):
                 if node_1 < node_2:
                     if weight_matrix[node_1][node_2] != 0:
                         self.add_edge(node_1, node_2, weight=weight_matrix[node_1][node_2])
-        print('随机图生成完毕')
 
     # 随机生成网格化地图
     def generate_grid_map(self):
@@ -85,8 +83,8 @@ class MyGraph(nx.Graph):
         # options = {"node_color": "#65abd0", "edge_color": '#dbebf4', "width": 1, "with_labels": True}
         cmap = plt.cm.get_cmap('Blues')
         options = {"node_color": "#65abd0", "edge_color": weights_list, 'edge_cmap': cmap, "width": 1, "with_labels": True}
-        nx.draw(self, pos=position, **options)
-        # nx.draw(self, with_labels=True)
+        # nx.draw(self, pos=position, **options)
+        nx.draw(self, with_labels=True)
         # nx.draw_networkx_edges(self, position, edgelist=[(0,1)], edge_color='m', width=4)
         # nx.draw_networkx(self, position, with_labels=True)
         # nx.draw_networkx_edge_labels(self, position, edge_labels=weights)
@@ -120,7 +118,7 @@ class MyGraph(nx.Graph):
             if node != self.start:
                 _, path = dijkstra(self, self.start, node)
                 self.path_tree[node] = path
-        print(self.path_tree)
+        # print(self.path_tree)
 
     def draw_tree(self):
         fig = plt.figure()

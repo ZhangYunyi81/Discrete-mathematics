@@ -21,15 +21,20 @@ class MyWindow(QWidget):
 
     def init_ui(self):
         self.resize(500,300)
-        # 最外层的布局，采用水平布局，包含两部分，左边为输入的图信息，
-        # 右边为输出的最短路径图
         self.container = QHBoxLayout()
-        # 第一组控件，设定图的信息
-        self.input_box = QGroupBox('输入信息')
-        # 输入信息是垂直摆放
         self.v_layout = QVBoxLayout()
-        # btn1 = QPushButton('定义节点', self)
-        # btn2 = QPushButton('定义边', self)
+        self.flo = QFormLayout()
+        self.text_edit = QTextEdit()
+        self.text_edit.setPlaceholderText('请输入对称矩阵以设置无向图权重，例如：\n[[0,1],[1,0]]')
+        self.flo.addWidget(self.text_edit)
+        self.btn_set_graph = QPushButton('生成无向图',self)
+        self.btn_set_graph.clicked.connect(self.set_graph)
+        self.flo.addWidget(self.btn_set_graph)
+        self.set_start_line = QLineEdit('')
+        self.set_start_line.setPlaceholderText('请输入最短路径树的根节点...')
+        self.flo.addWidget(self.set_start_line)
+        self.set_start_btn = QPushButton('设置根节点',self)
+        self.flo.addWidget(self.set_start_btn)
         self.btn_ran_graph = QPushButton('随机生成图',self)
         self.btn_ran_graph.clicked.connect(self.random_grid_graph)
         self.btn_ran_start_end = QPushButton('随机生成起点终点', self)
@@ -40,20 +45,38 @@ class MyWindow(QWidget):
         self.btn_tree.clicked.connect(self.draw_tree)
         # v_layout.addWidget(btn1)
         # v_layout.addWidget(btn2)
-        self.v_layout.addWidget(self.btn_ran_graph)
-        self.v_layout.addWidget(self.btn_ran_start_end)
-        self.v_layout.addWidget(self.btn_solve)
-        self.v_layout.addWidget(self.btn_tree)
-        self.input_box.setLayout(self.v_layout)
-        # 创建第二个组
-        # self.output_box = QGroupBox('图可视化')
-        # self.v_layout = QVBoxLayout()
-        # self.output_box.setLayout(self.v_layout)
-        self.container.addWidget(self.input_box)
-        # self.container.addWidget(self.output_box)
+        # self.v_layout.addWidget(self.text_edit)
+        # self.v_layout.addWidget(self.btn_ran_graph)
+        # self.v_layout.addWidget(self.btn_ran_start_end)
+        # self.v_layout.addWidget(self.btn_solve)
+        # self.v_layout.addWidget(self.btn_tree)
+        self.N2AnoPb_shadow = QGraphicsDropShadowEffect()  # 阴影类
+        self.N2AnoPb_shadow.setOffset(0, 0)  # 设置阴影偏移坐标
+        self.N2AnoPb_shadow.setBlurRadius(10)  # 设置阴影深度
+        self.N2AnoPb_shadow.setColor(Qt.darkGreen)  # 设置阴影颜色
+        self.btn_tree.setGraphicsEffect(self.N2AnoPb_shadow)  # 把阴影赋给控件
 
-        self.setLayout(self.container)
-        self.setWindowTitle('计算无向图最短路径')
+
+        self.flo.addWidget(self.btn_ran_graph)
+        self.flo.addWidget(self.btn_ran_start_end)
+        self.flo.addWidget(self.btn_solve)
+        self.flo.addWidget(self.btn_tree)
+        # self.setLayout(self.v_layout)
+        self.setLayout(self.flo)
+
+        self.setWindowTitle('最短路径树生成（20377139-张云奕）')
+
+    def set_graph(self):
+        graph_info = self.text_edit.toPlainText()
+        weight_matrix = np.array(eval(graph_info))
+        print(weight_matrix.shape)
+        self.G = MyGraph()
+        self.G.generate_map_from_matrix(weight_matrix)
+        plt.close()
+        self.G.draw_raw()
+        print('已设置无向图')
+
+
 
     def random_graph(self):
         self.G = MyGraph()
