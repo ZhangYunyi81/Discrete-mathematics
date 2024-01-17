@@ -24,8 +24,12 @@ class MyGraph(nx.Graph):
 
     def generate_map_from_matrix(self, weight_matrix):
         node_amount = weight_matrix.shape[0]
+        if int(sqrt(node_amount)) != sqrt(node_amount):
+            row_num = int(sqrt(node_amount)) + 1
+        else:
+            row_num = sqrt(node_amount)
         for node_1 in range(node_amount):
-            self.add_node(node_1, pos=(np.random.random(1), np.random.random(1)))
+            self.add_node(node_1, pos=(int(node_1/row_num), node_1%row_num))
             for node_2 in range(node_amount):
                 if node_1 < node_2:
                     if weight_matrix[node_1][node_2] != 0:
@@ -83,14 +87,25 @@ class MyGraph(nx.Graph):
         # options = {"node_color": "#65abd0", "edge_color": '#dbebf4', "width": 1, "with_labels": True}
         cmap = plt.cm.get_cmap('Blues')
         options = {"node_color": "#65abd0", "edge_color": weights_list, 'edge_cmap': cmap, "width": 1, "with_labels": True}
-        # nx.draw(self, pos=position, **options)
-        nx.draw(self, with_labels=True)
+        nx.draw(self, pos=position, with_labels=True)
+        # nx.draw(self, with_labels=True)
         # nx.draw_networkx_edges(self, position, edgelist=[(0,1)], edge_color='m', width=4)
         # nx.draw_networkx(self, position, with_labels=True)
         # nx.draw_networkx_edge_labels(self, position, edge_labels=weights)
         # print(weights_dic)
         plt.show()
-
+    def draw_raw_matrix(self):
+        fig = plt.figure()
+        position = {}
+        for i in range(self.number_of_nodes()):
+            position[i] = self.nodes[i]['pos']
+        weights_dic = nx.get_edge_attributes(self, 'weight')
+        weights_list = []
+        for idx, weight in weights_dic.items():
+            weights_list.append(weight)
+        # options = {"node_color": "#65abd0", "edge_color": '#dbebf4', "width": 1, "with_labels": True}
+        nx.draw(self,pos=position)
+        plt.show()
     def draw_start_end(self):
         fig = plt.figure()
         position = {}
@@ -104,13 +119,25 @@ class MyGraph(nx.Graph):
         cmap = plt.cm.get_cmap('Blues')
         options = {"node_color": "#65abd0", "edge_color": weights_list, 'edge_cmap': cmap, "width": 1,
                    "with_labels": True}
-        nx.draw(self, pos=position, **options)
+        nx.draw(self, pos=position,with_labels=True)
         # nx.draw(self, with_labels=True)
-        nx.draw_networkx_nodes(self, position, nodelist=[self.start, self.end], node_color='m')
+        nx.draw_networkx_nodes(self, pos=position, nodelist=[self.start, self.end], node_color='m')
         # print(weights_dic)
         plt.savefig('./fig/path.png')
         plt.show()
-
+    def draw_start(self):
+        fig = plt.figure()
+        position = {}
+        for i in range(self.number_of_nodes()):
+            position[i] = self.nodes[i]['pos']
+        weights_dic = nx.get_edge_attributes(self, 'weight')
+        weights_list = []
+        for idx, weight in weights_dic.items():
+            weights_list.append(weight)
+        # options = {"node_color": "#65abd0", "edge_color": '#dbebf4', "width": 1, "with_labels": True}
+        nx.draw(self, pos=position, with_labels=True)
+        nx.draw_networkx_nodes(self, pos=position, nodelist=[self.start], node_color='m')
+        plt.show()
     def solve_tree(self):
         self.path_tree = {}
         path = []
@@ -118,7 +145,7 @@ class MyGraph(nx.Graph):
             if node != self.start:
                 _, path = dijkstra(self, self.start, node)
                 self.path_tree[node] = path
-        # print(self.path_tree)
+        print(self.path_tree)
 
     def draw_tree(self):
         fig = plt.figure()
@@ -133,7 +160,7 @@ class MyGraph(nx.Graph):
         cmap = plt.cm.get_cmap('Blues')
         options = {"node_color": "#65abd0", "edge_color": weights_list, 'edge_cmap': cmap, "width": 1,
                    "with_labels": True}
-        nx.draw(self, pos=position, **options)
+        nx.draw(self, pos=position, with_labels=True)
         for end, path in self.path_tree.items():
             path_list = []
             for node_idx in range(len(path) - 1):
@@ -158,7 +185,7 @@ class MyGraph(nx.Graph):
         cmap = plt.cm.get_cmap('Blues')
         options = {"node_color": "#65abd0", "edge_color": weights_list, 'edge_cmap': cmap, "width": 1,
                    "with_labels": True}
-        nx.draw(self, pos=position, **options)
+        nx.draw(self, pos=position, with_labels=True)
         path_list = []
         for node_idx in range(len(self.path)-1):
             path_list.append((self.path[node_idx], self.path[node_idx+1]))

@@ -13,14 +13,14 @@ from graph import *
 from PyQt5.QtGui import QPixmap
 import matplotlib
 import matplotlib.pyplot as plt
-
+import time
 class MyWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
 
     def init_ui(self):
-        self.resize(500,300)
+        self.resize(500,400)
         self.container = QHBoxLayout()
         self.v_layout = QVBoxLayout()
         self.flo = QFormLayout()
@@ -30,10 +30,11 @@ class MyWindow(QWidget):
         self.btn_set_graph = QPushButton('生成无向图',self)
         self.btn_set_graph.clicked.connect(self.set_graph)
         self.flo.addWidget(self.btn_set_graph)
-        self.set_start_line = QLineEdit('')
+        self.set_start_line = QTextEdit()
         self.set_start_line.setPlaceholderText('请输入最短路径树的根节点...')
         self.flo.addWidget(self.set_start_line)
         self.set_start_btn = QPushButton('设置根节点',self)
+        self.set_start_btn.clicked.connect(self.set_start)
         self.flo.addWidget(self.set_start_btn)
         self.btn_ran_graph = QPushButton('随机生成图',self)
         self.btn_ran_graph.clicked.connect(self.random_grid_graph)
@@ -64,19 +65,32 @@ class MyWindow(QWidget):
         # self.setLayout(self.v_layout)
         self.setLayout(self.flo)
 
-        self.setWindowTitle('最短路径树生成（20377139-张云奕）')
+        self.setWindowTitle('最短路径树APP(作者：张云奕)')
 
     def set_graph(self):
-        graph_info = self.text_edit.toPlainText()
-        weight_matrix = np.array(eval(graph_info))
-        print(weight_matrix.shape)
-        self.G = MyGraph()
-        self.G.generate_map_from_matrix(weight_matrix)
-        plt.close()
-        self.G.draw_raw()
-        print('已设置无向图')
+        try:
+            graph_info = self.text_edit.toPlainText()
+            weight_matrix = np.array(eval(graph_info))
+            # print(weight_matrix.shape)
+            self.G = MyGraph()
+            self.G.generate_map_from_matrix(weight_matrix)
+            plt.close()
+            self.G.draw_raw()
+            # print('已设置无向图')
+        except:
+            msg_box = QMessageBox(QMessageBox.Critical, '输入错误', '请输入正确的矩阵！')
+            msg_box.exec_()
 
-
+    def set_start(self):
+        try:
+            start_info = self.set_start_line.toPlainText()
+            self.G.start = eval(start_info)
+            # print('已设置根节点')
+            plt.close()
+            self.G.draw_start()
+        except:
+            msg_box = QMessageBox(QMessageBox.Critical, '输入错误', '图中没有这个结点')
+            msg_box.exec_()
 
     def random_graph(self):
         self.G = MyGraph()
